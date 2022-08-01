@@ -15,67 +15,21 @@ import sqlite3
 
 Courier = ('Courier',17,'bold')
 class Atm:
-    def __init__(self,main):
-        # We have connected to the database
-        self.conn = sqlite3.connect('atm.db',timeout=100)
-        self.login = False
-        self.main = main
-        self.top = Label(self.main,text='BANK',bg='#1f1c2c',fg='white',font=('Courier',30,'bold'))
-        self.top.pack(fill=X)
-        self.frame = Frame(self.main,bg='#2193b0',width=600,height=500)
-
+   
         # Creating the login screen(2 buttons , 2 entry boxes and 2 labels)
-        self.account = Label(self.frame,text='Account Number',bg="#728B8E",fg="white",font=Courier)
-        self.accountEntry = Entry(self.frame,bg='#FFFFFF',highlightcolor="#50A8B0", highlightthickness=2, highlightbackground="white")
-        self.pin = Label(self.frame,text='Pin',bg="#728B8E",fg="white",font=Courier)
-        self.pinEntry = Entry(self.frame,show='*',bg='#FFFFFF',highlightcolor="#50A8B0", highlightthickness=2, highlightbackground="white")
+        
 
         # Login button calls validate method of the same class.
-        self.button = Button(self.frame,text='Login',bg='#1f1c2c',fg='white',font=('Courier',20,'bold'),command=self.validate)
-        self.quit = Button(self.frame,text='Quit',bg='#1f1c2c',fg='white',font=('Courier',20,'bold'),command=self.main.destroy)
+        
 
         # placing all the buttons and entry boxes in the frame.
-        self.account.place(x=45,y=100,width=220,height=20)
-        self.accountEntry.place(x=325,y=97,width=200,height=25)
-        self.pin.place(x=45,y=180,width=220,height=20)
-        self.pinEntry.place(x=325,y=180,width=200,height=25)
-        self.button.place(x=240,y=260,width=100,height=30)
-        self.quit.place(x=400,y=420,width=100,height=30)
-        self.frame.pack()
+        
     # Taking all the details of a account in list.
     def fetch(self):
-        self.list = []
-        self.details = self.conn.execute('Select name, password, acc_no, type, balance from atm where acc_no = ?',(self.ac,))
-        for i in self.details:
-            self.list.append('Name = {}'.format(i[0]))
-            self.list.append('Account no = {}'.format(i[2]))
-            self.list.append('Type = {}'.format(i[3]))
-            self.ac = i[2]
-            self.list.append('Balance = Rs.{}'.format(i[4]))
+        
 
     def validate(self):
-        ac = False
-        self.details = self.conn.execute('Select name, password, acc_no, type, balance from atm where acc_no = ?',(self.accountEntry.get(),))
-        for i in self.details:
-            self.ac = i[2]
-            if i[2] == self.accountEntry.get():
-                ac = True
-            elif i[1] == self.pinEntry.get():
-                ac = True
-                m = '{}! Welcome to BANK'.format(i[0])
-                self.fetch()
-                messagebox._show("Login Info", m)
-                self.frame.destroy()
-                # If entries are correct the main menu is called
-                self.menu()
-            else:
-                ac = True
-                m = " Login UnsucessFull ! Wrong Password"
-                messagebox._show("Login Info!", m)
-
-            if not ac:
-                m = " Wrong Account Number !"
-                messagebox._show("Login Info!", m)
+        
     # Creating the menu frame
     def menu(self):
         # There are total 7 buttons and commands associated with each of the button.
@@ -109,84 +63,37 @@ class Atm:
         self.remove_change_pin()
 
         # Fetching the data
-        self.fetch()
-        display = self.list[0]+'\n'+self.list[1]+'\n'+self.list[2]
-        self.label = Label(self.frame, text=display, font=('Courier',20,'bold'))
-        self.label.place(x=180, y=180, width=300, height=100)
+        
 
     def check(self):
         # Removing previous options
-        self.entries()
-        self.remove_change_pin()
-
+        
         # Fetching the data
-        self.fetch()
-        b = self.list[3]
-        self.label = Label(self.frame, text=b, font=('Courier',20,'bold'))
-        self.label.place(x=180, y=180, width=300, height=100)
-
+        
     def deposit(self):
         # Creating the interface for deposit
-        self.remove_change_pin()
-        self.label = Label(self.frame, text='Enter amount to deposit', font=('Courier', 10, 'bold'))
-        self.label.place(x=180, y=180, width=300, height=100)
-        self.amount = Entry(self.frame,bg='#FFFFFF',highlightcolor="#50A8B0", highlightthickness=2, highlightbackground="white")
-        self.submitButton = Button(self.frame,text='Submit',bg='#1f1c2c',fg='white',font=('Courier',10,'bold'),command =  self.deposit_trans)
+        
 
-        self.amount.place(x=195,y=300,width=160,height=20)
-        self.submitButton.place(x=365,y=300,width=100,height=20)
         
 
     def deposit_trans(self):
         # If field remains empty a error message must pop up
-        if(self.amount.get()==''):
-            d = 'Enter amount'
-            messagebox._show('Transaction Error',d)
-        else:
-            self.label = Label(self.frame,text='Transaction successfull!',font=('Courier',10,'bold'))
-            self.label.place(x=180, y=180, width=300, height=100)
-            self.conn.execute('Update atm set balance = balance+? where acc_no=?',(self.amount.get(),self.ac))
-            self.conn.commit()
-            self.write_deposit()
-            self.entries()
+       
+       
 
     def write_deposit(self):
         # Print the information of amount deposited on the menu window and save a text file about the same.
-        self.last_deposit = 'An amount of Rs.{} \n is deposited in \n {}'.format(self.amount.get(), self.list[1])
-        f = open('last.txt', 'w')
-        f.write(self.last_deposit)
-        f.close()
+        
 
     # Withdraw is also same as deposit. Note that we have not taken in to account that what is the current amount in the acoount user can take any amount if withdraw is more than current. Balance will become negative.
     def withdraw(self):
-        self.remove_change_pin()
-        self.label = Label(self.frame, text='Enter amount to Withdraw', font=('Courier', 10, 'bold'))
-        self.label.place(x=180, y=180, width=300, height=100)
-        self.amount = Entry(self.frame, bg='#FFFFFF', highlightcolor="#50A8B0", highlightthickness=2,
-                            highlightbackground="white")
-        self.submitButton = Button(self.frame, text='Submit', bg='#1f1c2c', fg='white', font=('Courier', 10, 'bold') , command = self.with_trans)
-
-        self.amount.place(x=195, y=300, width=160, height=20)
-        self.submitButton.place(x=365, y=300, width=100, height=20)
-
+        
     def with_trans(self):
-        if (self.amount.get() == ''):
-            d = 'Enter amount'
-            messagebox._show('Transaction Error', d)
-        else:
-            self.label = Label(self.frame, text='Transaction successfull!', font=('Courier', 10, 'bold'))
-            self.label.place(x=180, y=180, width=300, height=100)
-            self.conn.execute('Update atm set balance = balance-? where acc_no=?', (self.amount.get(), self.ac))
-            self.conn.commit()
-            self.last_with()
-            self.entries()
+        
 
 
     def last_with(self):
-        self.last_withdraw = 'An amount of Rs.{} \n is  withdraw from \n {}'.format(self.amount.get(), self.list[1])
-        f = open('last.txt', 'w')
-        f.write(self.last_withdraw)
-        f.close()
+       
 
     # This function changes the PIN of the user.
     def change(self):
@@ -238,30 +145,7 @@ class Atm:
                 self.label.place(x=180, y=180, width=300, height=100)                
     # Print the last transaction
     def history(self):
-        self.entries()
-        self.remove_change_pin()
-        f = open('last.txt','r')
-        self.hist = f.read()
-        f.close()
-        self.label = Label(self.frame, text=self.hist, font=('Courier', 15, 'bold'))
-        self.label.place(x=180, y=180, width=300, height=100)
-
-    # Removing Buttons that are not needed any more
-    def entries(self):
-        try:
-            self.amount.place_forget()
-            self.submitButton.place_forget()
-        except:
-            pass
-
-    def remove_change_pin(self):
-        try:
-            self.old.place_forget()
-            self.new.place_forget()
-            self.confirm.place_forget()
-            self.submit2.place_forget()
-        except:
-            pass
+        
 
 # Create the main window
 main = Tk()
